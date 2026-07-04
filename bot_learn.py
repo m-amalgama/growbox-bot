@@ -35,8 +35,6 @@ back_ikb = InlineKeyboardMarkup(
     ]
 )
 
-
-
 @router.message(F.text == "Кнопка 1")
 async def button_1_handler(msg_button_1:Message):
     await msg_button_1.answer("первая кнопка")
