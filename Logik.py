@@ -9,7 +9,7 @@ def fun(temp):
     K = 10
     error = temp - 27
     speed = min((base + error * K), 80)
-    return speed
+    return round(speed, 1)
 
 def mock_1():
     temp = round(random.uniform(25, 34), 2)
