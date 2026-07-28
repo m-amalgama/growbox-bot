@@ -5,12 +5,13 @@ from aiogram.types import Message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters.callback_data import CallbackData
+from aiogram.fsm.state import 
 from Default import default
 
 router = Router()
 
-class TempCB(CallbackData, prefix="temp"):
-    value: int
+class Config(StatesGroup):
+    waiting_temp = State()
 
 class VenCB(CallbackData, prefix="ven"):
     value: int
@@ -24,9 +25,7 @@ menu_kb = ReplyKeyboardMarkup(
 temp_cntrl_ikb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="24",callback_data=TempCB(value=24).pack()),
-            InlineKeyboardButton(text="26",callback_data=TempCB(value=26).pack()),
-            InlineKeyboardButton(text="28",callback_data=TempCB(value=28).pack())
+            InlineKeyboardButton(text="temperature",callback_data="ask_temp")
         ],
         [
             InlineKeyboardButton(text="40",callback_data=VenCB(value=40).pack()),
@@ -41,15 +40,21 @@ temp_cntrl_ikb = InlineKeyboardMarkup(
 async def menu_handler(msg:Message):
     await msg.answer("Настройка климата — выбери значение:", reply_markup=temp_cntrl_ikb)
 
-@router.callback_query(TempCB.filter())
-async def temp_hendler(temp, callback_data: TempCB):
-    value = callback_data.value
-    await temp.answer()
-    await temp.message.answer(f"цель : {value}С°")
-    default["target"] = value
+@router.callback_query(F.data == "ask_temp")
+async def wait_for_inp_temp(callback, state):
+    await callback.answer()
+    await callback.message.answer("Желательная температура:")
+    await state.set_state(Config.waiting_temp)
+
+
+@router.message(Config.waiting_temp) 
+async def read_temp(message,state):   #первый аргумент любой второй по фреймворку
+    await message.answer(f"цель : {message.text}°C")
+    await state.clear()
+    default["target"] = int(message.text)
 
 @router.callback_query(VenCB.filter())
-async def ven_hendler(ven, callback_data: VenCB):
+async def ven_hendler(ven, callback_data):
     value = callback_data.value
     await ven.answer()
     await ven.message.answer(f"максимальная мощность: {value}%")
