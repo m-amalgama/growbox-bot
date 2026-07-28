@@ -32,7 +32,8 @@ temp_cntrl_ikb = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(text="40",callback_data=VenCB(value=40).pack()),
             InlineKeyboardButton(text="60",callback_data=VenCB(value=60).pack()),
-            InlineKeyboardButton(text="80",callback_data=VenCB(value=80).pack())
+            InlineKeyboardButton(text="80",callback_data=VenCB(value=80).pack()),
+            InlineKeyboardButton(text="100",callback_data=VenCB(value=100).pack())
         ]
     ]
 )
@@ -61,7 +62,7 @@ async def main():
     bot = Bot(token=settings.token)
     dp = Dispatcher()
     dp.include_router(router)
-    await dp.start_polling(bot)
+    await asyncio.gather(dp.start_polling(bot), sensor_loop(bot))
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main()) 

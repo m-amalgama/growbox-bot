@@ -4,11 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def fun(temp):
+def fun(temp,temp_target, max_ven=80):
     base = 45
     K = 10
-    error = temp - 27
-    speed = min((base + error * K), 80)
+    error = temp - temp_target
+    speed = max(min((base + error * K), max_ven), 0)
     return round(speed, 1)
 
 def mock_1():
@@ -22,7 +22,7 @@ def mock_1():
 def mock_n():
     v_list = []
     count = 0
-    base_temp = 25.0
+    base_temp = 15.0
     base_humi = 40.2
     while count < 100:
         dict_t_h_v = {}
