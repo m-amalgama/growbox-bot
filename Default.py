@@ -1,0 +1,1 @@
+default = {"target": 27, "max_speed": 80}

@@ -1,15 +1,5 @@
 import math
 import random
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-def fun(temp,temp_target, max_ven=80):
-    base = 45
-    K = 10
-    error = temp - temp_target
-    speed = max(min((base + error * K), max_ven), 0)
-    return round(speed, 1)
 
 def mock_1():
     temp = round(random.uniform(25, 34), 2)
@@ -37,15 +27,3 @@ def mock_n():
         v_list.append(dict_t_h_v)
         count += 1
     return v_list
-
-mock = mock_n()
-temps = [t["temp"] for t in mock]
-speeds = [fun(t) for t in temps]
-plt.plot(temps, speeds)
-plt.xlabel("temp")
-plt.ylabel("speed %")
-plt.show()
-print(temps)
-print(speeds)
-
-

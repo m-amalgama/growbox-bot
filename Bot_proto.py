@@ -1,12 +1,11 @@
-import asyncio
 from aiogram import F
-from aiogram import Bot, Dispatcher, Router
+from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters.callback_data import CallbackData
-from config import settings
+from Default import default
 
 router = Router()
 
@@ -47,22 +46,15 @@ async def temp_hendler(temp, callback_data: TempCB):
     value = callback_data.value
     await temp.answer()
     await temp.message.answer(f"цель : {value}С°")
+    default["target"] = value
 
 @router.callback_query(VenCB.filter())
 async def ven_hendler(ven, callback_data: VenCB):
     value = callback_data.value
     await ven.answer()
     await ven.message.answer(f"максимальная мощность: {value}%")
+    default["max_speed"] = value
 
 @router.message(CommandStart())
 async def start_handler(msg_start: Message):
     await msg_start.answer("GrowBot", reply_markup=menu_kb)
-
-async def main():
-    bot = Bot(token=settings.token)
-    dp = Dispatcher()
-    dp.include_router(router)
-    await asyncio.gather(dp.start_polling(bot), sensor_loop(bot))
-
-if __name__ == "__main__":
-    asyncio.run(main()) 
