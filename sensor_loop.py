@@ -10,4 +10,4 @@ async def loop(bot):
         temp = mock_data["temp"]
         ven_speed = ven(temp, **default)
         faan(ven_speed)
-        await asyncio.sleep(60)
+        await asyncio.sleep(5)
