@@ -5,7 +5,7 @@ from aiogram.types import Message
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters.callback_data import CallbackData
-from aiogram.fsm.state import 
+from aiogram.fsm.state import StatesGroup, State
 from Default import default
 
 router = Router()
@@ -48,10 +48,13 @@ async def wait_for_inp_temp(callback, state):
 
 
 @router.message(Config.waiting_temp) 
-async def read_temp(message,state):   #первый аргумент любой второй по фреймворку
-    await message.answer(f"цель : {message.text}°C")
-    await state.clear()
-    default["target"] = int(message.text)
+async def read_temp(temp,state):   #первый аргумент любой второй по фреймворку
+        try:
+            default["target"] = int(temp.text)
+            await state.clear()
+            await temp.answer(f"цель : {temp.text}°C")
+        except ValueError:
+            await temp.answer(f"это должно быть целое число")
 
 @router.callback_query(VenCB.filter())
 async def ven_hendler(ven, callback_data):
