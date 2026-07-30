@@ -3,4 +3,4 @@ def ven(temp,target, max_speed):
     K = 10
     error = temp - target
     speed = max(min((base + error * K), max_speed), 0)
-    return round(speed, 1)
+    return int(speed)

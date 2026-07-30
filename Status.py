@@ -1,0 +1,1 @@
+status_dict = {"temp": 0, "ven":0,}
