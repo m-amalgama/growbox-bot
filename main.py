@@ -1,8 +1,8 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from config import settings
-from Bot_proto import router
-from sensor_loop import loop
+from bot.handlers import router
+from core.cycle import loop
 
 async def main():
     bot = Bot(token=settings.token)

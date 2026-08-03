@@ -1,9 +1,9 @@
 import asyncio
-from Mock import mock_1
-from Default import default
-from Ven_fun import ven
-from Mock_fan import faan
-from Status import status_dict
+from hardware.fake_sensor import mock_1
+from core.control import ven
+from core.targets import default
+from hardware.fan import set_speed
+from core.status import status_dict
 
 async def loop(bot):
     while True:
@@ -12,5 +12,5 @@ async def loop(bot):
         ven_speed = ven(temp, **default)
         status_dict["temp"] = temp
         status_dict["ven"] = ven_speed
-        faan(ven_speed)
+        set_speed(ven_speed)
         await asyncio.sleep(5)

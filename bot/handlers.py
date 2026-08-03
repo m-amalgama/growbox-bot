@@ -6,8 +6,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.state import StatesGroup, State
-from Default import default
-from Status import status_dict
+from core.targets import default
+from core.status import status_dict
 
 router = Router()
 

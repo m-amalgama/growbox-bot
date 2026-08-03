@@ -1,4 +1,4 @@
-from Ven_fun import ven
+from core.control import ven
 
 def test_returns_base_at_target():      # 27, 27, 60  → 45
     assert ven(27, 27, 60) == 45

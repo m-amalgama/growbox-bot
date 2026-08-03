@@ -1,5 +1,5 @@
 import pytest
-from Mock import mock_1
+from hardware.fake_sensor import mock_1
 
 @pytest.fixture
 def d():
