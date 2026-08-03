@@ -10,23 +10,52 @@ Telegram bot for proportional fan control in a Spider Farmer grow tent.
 
 - Python 3.14
 - aiogram 3.30 — Telegram Bot API, async
+- pydantic-settings 2.14 — config from `.env`
 - pytest 9.1 — 9 tests
 
-## How it works
+## Layout
+
+```
+.
+├── main.py              entry point
+├── config.py            settings
+├── bot/
+│   └── handlers.py      router, keyboards, FSM dialog
+├── core/
+│   ├── control.py       control logic
+│   ├── cycle.py         background loop
+│   ├── targets.py       target temperature and speed limit
+│   └── status.py        latest readings
+├── hardware/
+│   ├── fake_sensor.py   sensor stub
+│   └── fan.py           fan stub
+└── tests/
+    ├── test_control.py
+    └── test_fake_sensor.py
+```
+
+Packages are split by layer: `bot` talks to Telegram, `core` holds the logic, `hardware` is the only place that touches devices. Swapping the stub for a real BLE thermometer means replacing one module in `hardware`.
 
 | File | Role |
 |---|---|
-| `main.py` | Entry point. Builds the bot, runs polling and the sensor loop together. |
-| `Bot_proto.py` | Router and handlers: inline menu, FSM config dialog, status on request. |
-| `config.py` | Settings from `.env` via pydantic-settings. |
-| `sensor_loop.py` | Background loop: reads the sensor, calls the control logic, writes the result. |
-| `Ven_fun.py` | Control logic. Proportional speed with min/max clamping. |
-| `Default.py` | Default settings: target temperature and max fan speed. |
-| `Status.py` | Latest readings. The loop writes, the handler reads. |
-| `Mock.py` | Sensor stub — returns temperature, humidity, VPD. |
-| `Mock_fan.py` | Fan stub — receives a speed and reports it. |
-| `test_ven.py` | Tests for the control logic. |
-| `test_mock.py` | Tests for the sensor stub. |
+| `main.py` | Builds the bot, runs polling and the sensor loop together via `asyncio.gather`. |
+| `config.py` | Reads the token from `.env`. |
+| `bot/handlers.py` | Router and handlers: inline menu, FSM dialog for the target, status on request. |
+| `core/control.py` | `calc_fan_speed()` — proportional speed with clamping. |
+| `core/cycle.py` | Background loop: read sensor → compute speed → write status → set fan. |
+| `core/targets.py` | Setpoint: target temperature and max fan speed. Written by handlers. |
+| `core/status.py` | Latest readings. The loop writes, the status handler reads. |
+| `hardware/fake_sensor.py` | Sensor stub — returns temperature, humidity, VPD. |
+| `hardware/fan.py` | Fan stub — receives a speed and reports it. |
+| `tests/__init__.py` | Keeps pytest's basedir at the project root, so `core.*` and `hardware.*` imports resolve. |
+
+## Control logic
+
+```
+speed = BASE_SPEED + (box_temp - target) * GAIN
+```
+
+clamped to `0 .. max_speed`. At the target the fan holds `BASE_SPEED`; every degree above it adds `GAIN` percent. No PID — the box has a slow thermal response and a proportional term is enough.
 
 ## Run
 
@@ -56,8 +85,8 @@ python main.py
 pytest
 ```
 
-- `test_ven.py` — control logic: target, minimum, maximum and clamping.
-- `test_mock.py` — sensor contract: keys, number of fields, value type, value range.
+- `test_control.py` — control logic: at target, below, above, upper clamp, lower clamp.
+- `test_fake_sensor.py` — sensor contract: key present, number of fields, value type, value range.
 
 ## Status
 
