@@ -2,14 +2,14 @@ import pytest
 from hardware.fake_sensor import read
 
 @pytest.fixture
-def d():
+def reading():
     return read()
 
-def test_mock_key_in_dict(d):
-    assert "temp" in d            
-def test_returns_three_keys(d):
-    assert len(d) == 3           
-def test_type_temp(d):
-    assert isinstance(d["temp"], float)  
-def test_temp_in_sensor_range(d):
-    assert 25 <= d["temp"] <= 34 
+def test_has_temp_key(reading):
+    assert "temp" in reading            
+def test_returns_three_keys(reading):
+    assert len(reading) == 3           
+def test_temp_is_float(reading):
+    assert isinstance(reading["temp"], float)  
+def test_temp_in_sensor_range(reading):
+    assert 25 <= reading["temp"] <= 34 

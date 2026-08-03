@@ -52,7 +52,7 @@ async def wait_for_inp_temp(callback, state):
 
 
 @router.message(Config.waiting_temp) 
-async def read_temp(temp_msg,state):   #первый аргумент любой второй по фреймворку
+async def save_temp(temp_msg,state):   #первый аргумент любой второй по фреймворку
         try:
             setpoint["target"] = int(temp_msg.text)
             await state.clear()
