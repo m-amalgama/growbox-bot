@@ -1,1 +1,1 @@
-status_dict = {"temp": 0, "ven":0,}
+current = {"temp": 0, "fan":0,}
