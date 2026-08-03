@@ -7,8 +7,8 @@ from core.status import current
 
 async def run(bot):
     while True:
-        mock_data = read()
-        temp = mock_data["temp"]
+        reading = read()
+        temp = reading["temp"]
         fan_speed = calc_fan_speed(temp, **setpoint)
         current["temp"] = temp
         current["fan"] = fan_speed

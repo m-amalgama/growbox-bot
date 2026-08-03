@@ -52,23 +52,23 @@ async def wait_for_inp_temp(callback, state):
 
 
 @router.message(Config.waiting_temp) 
-async def read_temp(temp,state):   #первый аргумент любой второй по фреймворку
+async def read_temp(temp_msg,state):   #первый аргумент любой второй по фреймворку
         try:
-            setpoint["target"] = int(temp.text)
+            setpoint["target"] = int(temp_msg.text)
             await state.clear()
-            await temp.answer(f"цель : {temp.text}°C")
+            await temp_msg.answer(f"цель : {temp_msg.text}°C")
         except ValueError:
-            await temp.answer(f"это должно быть целое число")
+            await temp_msg.answer(f"это должно быть целое число")
 
 @router.callback_query(FanCB.filter())
-async def fan_speed_handler(callback, callback_data):
+async def fan_speed_handler(fan_callback, callback_data):
     value = callback_data.value
-    await callback.answer()
-    await callback.message.answer(f"максимальная мощность: {value}%")
+    await fan_callback.answer()
+    await fan_callback.message.answer(f"максимальная мощность: {value}%")
     setpoint["max_speed"] = value
 
 @router.callback_query(F.data == "show_status")
-async def status_hendler(callback):
+async def status_handler(callback):
     await callback.answer()
     await callback.message.answer(f"показатели: {current}{setpoint}")
 
