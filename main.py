@@ -1,7 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from config import settings
-from bot.handlers import router
+from bot import router
 from core.cycle import run
 
 async def main():
