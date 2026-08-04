@@ -6,8 +6,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.state import StatesGroup, State
-from core.targets import setpoint
-from core.status import current
+from core import status, targets
 
 router = Router()
 
@@ -54,7 +53,7 @@ async def wait_for_inp_temp(callback, state):
 @router.message(Config.waiting_temp) 
 async def save_temp(temp_msg,state):   #первый аргумент любой второй по фреймворку
         try:
-            setpoint["target"] = int(temp_msg.text)
+            targets.setpoint["target"] = int(temp_msg.text)
             await state.clear()
             await temp_msg.answer(f"цель : {temp_msg.text}°C")
         except ValueError:
@@ -65,12 +64,12 @@ async def fan_speed_handler(fan_callback, callback_data):
     value = callback_data.value
     await fan_callback.answer()
     await fan_callback.message.answer(f"максимальная мощность: {value}%")
-    setpoint["max_speed"] = value
+    targets.setpoint["max_speed"] = value
 
 @router.callback_query(F.data == "show_status")
 async def status_handler(callback):
     await callback.answer()
-    await callback.message.answer(f"показатели: {current}{setpoint}")
+    await callback.message.answer(f"показатели: {status.current}{targets.setpoint}")
 
 @router.message(CommandStart())
 async def start_handler(msg_start: Message):
