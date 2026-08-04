@@ -2,55 +2,26 @@ from aiogram import F
 from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.filters.callback_data import CallbackData
-from aiogram.fsm.state import StatesGroup, State
 from core import status, targets
+from bot import keyboards
+from bot.keyboards import FanCB
+from bot.states import TempSetup
 
 router = Router()
 
-class Config(StatesGroup):
-    waiting_temp = State()
-
-class FanCB(CallbackData, prefix="fan"):
-    value: int
-
-menu_kb = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text="menu")]
-    ]
-)
-
-temp_cntrl_ikb = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text="temperature",callback_data="ask_temp")
-        ],
-        [
-            InlineKeyboardButton(text="40",callback_data=FanCB(value=40).pack()),
-            InlineKeyboardButton(text="60",callback_data=FanCB(value=60).pack()),
-            InlineKeyboardButton(text="80",callback_data=FanCB(value=80).pack()),
-            InlineKeyboardButton(text="100",callback_data=FanCB(value=100).pack())
-        ],
-        [
-            InlineKeyboardButton(text="status",callback_data="show_status")
-        ]
-    ]
-)
 
 @router.message(F.text == "menu")
 async def menu_handler(msg:Message):
-    await msg.answer("Настройка климата — выбери значение:", reply_markup=temp_cntrl_ikb)
+    await msg.answer("Настройка климата — выбери значение:", reply_markup=keyboards.targets)
 
 @router.callback_query(F.data == "ask_temp")
 async def wait_for_inp_temp(callback, state):
     await callback.answer()
     await callback.message.answer("Желательная температура:")
-    await state.set_state(Config.waiting_temp)
+    await state.set_state(TempSetup.waiting)
 
 
-@router.message(Config.waiting_temp) 
+@router.message(TempSetup.waiting) 
 async def save_temp(temp_msg,state):   #первый аргумент любой второй по фреймворку
         try:
             targets.setpoint["target"] = int(temp_msg.text)
@@ -73,4 +44,4 @@ async def status_handler(callback):
 
 @router.message(CommandStart())
 async def start_handler(msg_start: Message):
-    await msg_start.answer("GrowBot", reply_markup=menu_kb)
+    await msg_start.answer("GrowBot", reply_markup=keyboards.menu)
