@@ -1,5 +1,4 @@
-from aiogram import F
-from aiogram import Router
+from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from core import status, targets
@@ -28,7 +27,7 @@ async def save_temp(temp_msg,state):   #первый аргумент любой
             await state.clear()
             await temp_msg.answer(f"цель : {temp_msg.text}°C")
         except ValueError:
-            await temp_msg.answer(f"это должно быть целое число")
+            await temp_msg.answer("это должно быть целое число")
 
 @router.callback_query(FanCB.filter())
 async def fan_speed_handler(fan_callback, callback_data):
